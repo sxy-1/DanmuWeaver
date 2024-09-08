@@ -40,22 +40,41 @@ def pHash(img):
 
 def get_phash_sequence(video: cv2.VideoCapture, frame_interval: int, name: str, show_progress: bool = True) -> list:
     sequence = []
-    i = -1
-    print(name,i)
+    if not video.isOpened():
+        print("Failed to open video")
+        return []
 
     fps = video.get(cv2.CAP_PROP_FPS)
     num_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT)) / fps
-    with tqdm(total=num_frames, desc=f"Processing frames for {name}", disable=not show_progress) as pbar:
+    print(name, "Total frames:", num_frames, "FPS:", fps)
 
+    with tqdm(total=num_frames, desc=f"Processing frames for {name}", disable=not show_progress) as pbar:
+        last_processed_time = -frame_interval * 1000  # 初始化为负值，以确保处理第一帧
+        current_time = -1
         while True:
-            i = i + 1
-            # print(i)
-            retval, frame = video.read()
-            if not retval:
-                break
-            phash = pHash(frame)
-            sequence.append(phash)
-            pbar.update(1)  # 更新进度条
+            # # if current_time == video.get(cv2.CAP_PROP_POS_MSEC):
+            # #     break
+            current_time = video.get(cv2.CAP_PROP_POS_MSEC)
+            # print(current_time)
+            # 每隔 frame_interval 秒处理一帧
+            if current_time >= last_processed_time + frame_interval * 1000:
+                retval, frame = video.read()  # 读取并解码当前帧
+                if not retval:
+                    break
+
+                last_processed_time = current_time // 1000 * 1000
+                # print(name, "Current time:", current_time, "is being phashed")
+                phash = pHash(frame)  # 假设 pHash 函数已经定义
+                sequence.append(phash)
+                pbar.update(1)  # 更新进度条
+            else:
+                video.grab()  # 跳过当前帧，避免解码不需要的帧
+                if video.get(cv2.CAP_PROP_POS_MSEC) == 0:
+                    print("shit")
+                    break
+    print(name,"seq finished")
+    return sequence  # 少2秒保证稳定性
+
 
             # # 保存帧为图片
             # timestamp = i   # 计算时间戳，假设fps为每秒帧数
@@ -77,10 +96,8 @@ def get_phash_sequence(video: cv2.VideoCapture, frame_interval: int, name: str, 
             # elif name == "video2":
             #     cv2.imwrite(os.path.join(save_path1, save_name), frame)
 
-            # 跳过指定帧数
-            for _ in range((round(fps) * frame_interval) - 1):
-                video.grab()
-    return sequence
+
+
 
 
 def compare_video(src_video, dst_video,frame_interval=1):
@@ -88,11 +105,15 @@ def compare_video(src_video, dst_video,frame_interval=1):
     video2 = cv2.VideoCapture(dst_video)
 
     with ThreadPoolExecutor() as executor:
-        future1 = executor.submit(get_phash_sequence, video1, frame_interval, "short", show_progress=False)
+        future1 = executor.submit(get_phash_sequence, video1, frame_interval, "short", show_progress=True)
         future2 = executor.submit(get_phash_sequence, video2, frame_interval, "long", show_progress=True)
 
         sequence1 = future1.result()
         sequence2 = future2.result()
+
+        print("sequence1.len:",len(sequence1))
+        print("sequence2.len:",len(sequence2))
+
 
     # print("cao")
     distance, path = fastdtw(sequence1, sequence2, dist=hamming)

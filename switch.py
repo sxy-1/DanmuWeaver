@@ -24,6 +24,8 @@ def tuple2int(tuples):
 
 
 def process_ass_file(input_file_path, output_file_path, data_two):
+    print("data_two:",data_two)
+    print("data_two.length()",len(data_two))
     with open(input_file_path, 'r', encoding='utf-8') as file:
         content = file.readlines()
 
@@ -33,10 +35,11 @@ def process_ass_file(input_file_path, output_file_path, data_two):
         if match:
             start_parts = match.group(1).split(',')
 
-            # print(start_parts)
+            # print("start_parts",start_parts)
             # print(i)
             # 更新 Start
             start_old = hms_to_seconds(start_parts[1])
+            print(start_old)
             start_new = data_two[start_old]
 
             start_parts[1] = seconds_to_hms(start_new)
