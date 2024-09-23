@@ -1,4 +1,6 @@
-
+<p align="center">
+  <img width="18%" align="center" src="https://obssh.obs.cn-east-3.myhuaweicloud.com/img_sxy/202409231714145.png" alt="logo">
+</p>
   <h1 align="center">
   弹幕编织者
 </h1>
@@ -8,7 +10,7 @@
 </p>
 <p align="center">
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Linux%20|%20macOS-blue?color=#4ec820" alt="Platform Win32 | Linux | macOS"/>
+    <img src="https://img.shields.io/badge/Platform-Win%20|%20Linux%20-blue?color=#4ec820" alt="Platform Win32 | Linux | macOS"/>
   </a>
   <a style="text-decoration:none">
     <img src="https://img.shields.io/badge/License-GPLv3-blue?color=#4ec820" alt="GPLv3"/>
@@ -19,25 +21,41 @@
 
 ### 介绍
 
-当前大环境下，观看动漫中被“和谐”掉的画面越来越多，极其影响观看体验，不少人放弃正版环境，选择前往盗版网站观看完整视频，可是又失去了弹幕/评论的氛围感。本实验尝试使用机器学习算法，让弹幕迁移到完整视频，获得更好的观看体验。
+你愿意忍受观看阉割版本的番剧/电影吗，你或许可以选择第三方网站，可是又舍不得放弃丰富的弹幕资源。
 
-![image-20231229222406456](https://obssh.obs.cn-east-3.myhuaweicloud.com/img_sxy/202312292224590.png)
-
-
+这个程序可以帮助你既能够观看完整视频，又可以使用移植来的弹幕资源。
 
 
 
-### 效果展示
+### 输入
 
-（版权问题不方便放图，以后再补）
+你只需要三个文件：（需自行下载）
 
-但是效果还是很好的，在第三方下载的视频，可以有准确的弹幕体验。
+1.完整的未阉割的视频（以下简称long）
+
+2.被阉割/和谐过的视频（以下简称short)
+
+3.和谐视频的弹幕（以下简称short_danmu)
+
+
+
+### 输出
+
+本程序将输出一个ass类型弹幕文件（以下简称long_ass)
+
+重要的是，无论short如何剪切，本程序都能较为稳定的得出short与long的映射，从而根据该映射生成long_ass。
 
 
 
 
 
-### 流程
+![image-20240922223242804](https://obssh.obs.cn-east-3.myhuaweicloud.com/img_sxy/202409222232993.png)
+
+
+
+
+
+### 原理
 
 1.下载原视频（以下称为L视频），和谐视频（以下称为S视频），以及和谐视频对应的弹幕（S弹幕）2.通过感知哈希函数对每一帧进行计算
 3.进行dtw运算，得出最优路径
@@ -53,10 +71,6 @@
 
 
 
-### 其他
-
-本项目由于作者时间不允许，只使用tkinter，并发现pyinstaller后无法运行，将在今后半年转为pyqt，并提供友好客户端。
-
 
 
 
@@ -65,5 +79,5 @@
 
 使用 GPLv3 许可证.
 
-Copyright © 2023 by dullspear
+Copyright © 2023-2024 by dullspear
 
